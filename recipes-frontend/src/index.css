@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+/* -------------------------------------------------------------------------- */
+/* 1. DESIGN SYSTEM & VARIABLES                                               */
+/* -------------------------------------------------------------------------- */
+:root {
+  --bg-dark: #020204;
+  --p-neon: #7c7cff; 
+  --s-neon: #00f2c3; 
+  --t-neon: #ff00c8; 
+  
+  --glass: rgba(10, 15, 30, 0.4); 
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-hover: rgba(20, 30, 50, 0.7);
+  
+  --text-main: #f8f9fb;
+  --text-muted: #94a3b8;
+  --transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. BASE RESET & GALAXY TRANSPARENCY FIX                                    */
+/* -------------------------------------------------------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* CRITICAL: Absolute transparency so the WebGL Galaxy shines through */
+html, body, #root {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: transparent !important; 
+  background-color: transparent !important;
+  color: var(--text-main);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.8); }
+::-webkit-scrollbar-thumb { background: var(--p-neon); border-radius: 10px; }
+
+/* Establishes the z-index hierarchy above the canvas */
+#root { position: relative; z-index: 1; }
+.container { max-width: 1300px; margin: 0 auto; padding: 20px; position: relative; z-index: 10; }
+
+/* -------------------------------------------------------------------------- */
+/* 3. NAVIGATION & HEADER                                                     */
+/* -------------------------------------------------------------------------- */
+.top-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 40px; background: var(--glass); backdrop-filter: blur(16px); 
+  border: 1px solid var(--glass-border); border-radius: 24px; margin-bottom: 50px;
+  box-shadow: 0 10px 30px rgba(0, 242, 195, 0.05);
+}
+.nav-brand h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+.nav-brand span { color: var(--s-neon); text-shadow: 0 0 15px rgba(0, 242, 195, 0.4); }
+.nav-links { display: flex; gap: 30px; }
+.nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+.nav-link:hover, .nav-link.active { color: var(--text-main); text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+.fav-count { background: var(--t-neon); color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 0 10px var(--t-neon); }
+
+/* -------------------------------------------------------------------------- */
+/* 4. SEARCH BAR & DYNAMIC PAGINATION FILTERS                                 */
+/* -------------------------------------------------------------------------- */
+@keyframes ambientGlow {
+  0% { box-shadow: 0 0 15px rgba(124, 124, 255, 0.3), inset 0 0 10px rgba(124, 124, 255, 0.1); border-color: rgba(124, 124, 255, 0.4); }
+  50% { box-shadow: 0 0 35px rgba(124, 124, 255, 0.6), inset 0 0 15px rgba(124, 124, 255, 0.2); border-color: rgba(124, 124, 255, 0.8); }
+  100% { box-shadow: 0 0 15px rgba(124, 124, 255, 0.3), inset 0 0 10px rgba(124, 124, 255, 0.1); border-color: rgba(124, 124, 255, 0.4); }
+}
+
+.search-interface { max-width: 900px; margin: 0 auto 50px auto; position: relative; z-index: 10; }
+.horizontal-control-bar { display: flex; gap: 15px; width: 100%; align-items: stretch; height: 55px; }
+.search-field-wrapper { flex: 1; position: relative; height: 100%; }
+
+.search-icon { 
+  position: absolute; left: 20px; top: 50%; transform: translateY(-50%); 
+  font-size: 1.2rem; color: var(--p-neon); text-shadow: 0 0 15px rgba(124, 124, 255, 0.8); z-index: 2;
+}
+
+.main-search-input { 
+  width: 100%; height: 100%;
+  padding: 0 20px 0 55px; 
+  background: rgba(15, 20, 35, 0.75); 
+  border: 1px solid var(--p-neon); 
+  border-radius: 16px; color: white; font-size: 1.05rem; 
+  backdrop-filter: blur(20px); outline: none; transition: var(--transition);
+  animation: ambientGlow 3s ease-in-out infinite; /* Permanent Breathing Glow */
+}
+.main-search-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.main-search-input:focus { 
+  animation: none; 
+  border-color: var(--s-neon); 
+  box-shadow: 0 0 40px rgba(0, 242, 195, 0.5), inset 0 0 15px rgba(0, 242, 195, 0.2); 
+  background: rgba(0, 242, 195, 0.1); 
+}
+
+/* Page Size Selector */
+.page-size-wrapper { position: relative; display: flex; align-items: center; height: 100%; }
+.page-size-selector {
+  appearance: none; -webkit-appearance: none;
+  padding: 0 40px 0 20px; height: 100%;
+  background: rgba(15, 20, 35, 0.75); border: 1px solid rgba(124, 124, 255, 0.4);
+  color: white; border-radius: 16px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 0.95rem;
+  transition: var(--transition); backdrop-filter: blur(20px); box-shadow: 0 0 20px rgba(124, 124, 255, 0.2); outline: none;
+}
+.page-size-selector:hover, .page-size-selector:focus { background: var(--glass-hover); border-color: var(--p-neon); box-shadow: 0 0 30px rgba(124, 124, 255, 0.5); }
+.page-size-selector option { background: #05070a; color: white; font-weight: 600; }
+.page-size-wrapper::after {
+  content: "▼"; position: absolute; right: 15px; color: var(--p-neon); font-size: 0.7rem; pointer-events: none; text-shadow: 0 0 10px rgba(124, 124, 255, 0.8);
+}
+
+/* Filter Button */
+.filter-toggle-action { 
+  padding: 0 30px; height: 100%; background: rgba(15, 20, 35, 0.75); 
+  border: 1px solid rgba(124, 124, 255, 0.4); color: white; border-radius: 16px; 
+  cursor: pointer; font-weight: 700; transition: var(--transition); backdrop-filter: blur(20px); box-shadow: 0 0 20px rgba(124, 124, 255, 0.2);
+}
+.filter-toggle-action:hover { background: var(--glass-hover); border-color: var(--p-neon); box-shadow: 0 0 30px rgba(124, 124, 255, 0.5); }
+.filter-toggle-action.active { background: var(--p-neon); border-color: transparent; box-shadow: 0 0 25px rgba(124, 124, 255, 0.6); }
+
+/* Filter Dropdown Body */
+.filter-dropdown-drawer { 
+  position: absolute; top: 75px; right: 0; width: 100%; max-width: 380px; 
+  background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(30px); border: 1px solid var(--s-neon); 
+  border-radius: 20px; padding: 25px; box-shadow: 0 20px 50px rgba(0, 242, 195, 0.2); overflow: hidden; 
+}
+.filter-controls-inner { display: flex; flex-direction: column; gap: 25px; }
+.control-box label { display: block; font-size: 0.8rem; font-weight: 900; color: var(--s-neon); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,242,195,0.3);}
+input[type="range"] { width: 100%; accent-color: var(--s-neon); cursor: pointer; }
+
+/* -------------------------------------------------------------------------- */
+/* 5. CINEMATIC RECIPE CARDS (FLUSH-EDGE UPGRADE)                             */
+/* -------------------------------------------------------------------------- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+
+.card { 
+  background: rgba(5, 7, 12, 0.95); /* Deep, pure dark base */
+  border: 1px solid var(--glass-border); 
+  border-radius: 24px; 
+  cursor: pointer; 
+  display: flex; 
+  flex-direction: column; 
+  
+  /* CRITICAL: No padding here + overflow hidden + translateZ perfectly clips corners to prevent light bleeding */
+  padding: 0; 
+  overflow: hidden; 
+  backdrop-filter: blur(12px); 
+  transition: var(--transition);
+  transform: translateZ(0); 
+}
+
+.card:hover { 
+  border-color: var(--s-neon); 
+  box-shadow: 0 15px 40px rgba(0, 242, 195, 0.3), inset 0 0 20px rgba(0, 242, 195, 0.1); 
+  background: rgba(10, 15, 25, 1); 
+  transform: translateY(-8px) translateZ(0); 
+}
+
+.card-image-hero {
+  height: 260px; 
+  position: relative; 
+  background-color: #000; 
+  background-size: cover; 
+  background-position: center;
+  display: flex; 
+  flex-direction: column; 
+  justify-content: flex-end;
+  padding: 20px; 
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-gradient-overlay {
+  /* inset -1px forces the shadow to stretch slightly past edges, completely killing light gaps */
+  position: absolute; inset: -1px; 
+  background: linear-gradient(to top, rgba(5, 7, 12, 1) 0%, rgba(5, 7, 12, 0.2) 50%, rgba(5, 7, 12, 0.7) 100%);
+  z-index: 1; pointer-events: none;
+}
+
+.card-top-row { position: absolute; top: 20px; left: 20px; right: 20px; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; }
+.card-hero-title { position: relative; z-index: 2; font-size: 1.5rem; font-weight: 900; color: #fff; line-height: 1.2; text-shadow: 0 5px 20px rgba(0,0,0,0.9); margin-bottom: 0; }
+
+.badge { background: rgba(0, 242, 195, 0.2); color: var(--s-neon); padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); border: 1px solid rgba(0,242,195,0.4); box-shadow: 0 0 15px rgba(0, 242, 195, 0.3);}
+.quick-fav-btn { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); backdrop-filter: blur(10px);}
+.quick-fav-btn:hover { transform: scale(1.1); background: rgba(0,0,0,0.9); box-shadow: 0 0 20px rgba(255,255,255,0.4);}
+.quick-fav-btn.active { background: rgba(255, 0, 200, 0.25); border-color: var(--t-neon); box-shadow: 0 0 20px rgba(255, 0, 200, 0.5); }
+
+.card-stats { 
+  padding: 15px 20px 20px; 
+  display: flex; gap: 20px; 
+  color: var(--text-muted); font-size: 0.95rem; font-weight: 700; 
+  background: rgba(5, 7, 12, 1); 
+}
+
+/* -------------------------------------------------------------------------- */
+/* 6. RECIPE DETAIL VIEW (PRO GLASSMORPHISM)                                  */
+/* -------------------------------------------------------------------------- */
+.detail-wrapper { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+.back-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-main); padding: 10px 20px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-weight: 600; transition: var(--transition); backdrop-filter: blur(10px); }
+.back-btn:hover { background: var(--glass-hover); border-color: var(--s-neon); box-shadow: 0 0 15px rgba(0, 242, 195, 0.3); }
+
+.detail-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 32px; padding: 50px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.02);}
+.title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+.title-row h2 { font-size: 3.5rem; line-height: 1.1; max-width: 70%; color: white; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,255,255,0.2);}
+
+.fav-action-btn { background: rgba(0,0,0,0.4); color: white; border: 1px solid var(--glass-border); padding: 14px 24px; border-radius: 16px; font-weight: 700; cursor: pointer; transition: var(--transition); backdrop-filter: blur(10px); }
+.fav-action-btn:hover { background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(255,255,255,0.2);}
+.fav-action-btn.active { background: rgba(255, 0, 200, 0.15); border-color: var(--t-neon); color: var(--t-neon); box-shadow: 0 0 25px rgba(255,0,200,0.3); text-shadow: 0 0 10px var(--t-neon);}
+
+.recipe-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; background: rgba(0,0,0,0.4); padding: 25px; border-radius: 20px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.5);}
+.meta-label { color: var(--s-neon); font-size: 0.75rem; font-weight: 900; text-transform: uppercase; display: block; margin-bottom: 5px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 242, 195, 0.3);}
+.meta-value { font-size: 1.4rem; font-weight: 700; color: white; }
+
+.recipe-description { font-size: 1.15rem; color: var(--text-muted); border-left: 3px solid var(--p-neon); padding-left: 20px; margin-bottom: 50px; line-height: 1.8; box-shadow: -10px 0 20px -10px rgba(124, 124, 255, 0.3);}
+.recipe-content { display: grid; gap: 40px; }
+.recipe-section h4 { font-size: 1.5rem; margin-bottom: 20px; color: var(--p-neon); text-shadow: 0 0 15px rgba(124, 124, 255, 0.4);}
+.ingredient-list { list-style: none; display: grid; gap: 12px; }
+.ingredient-list li { background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: var(--text-main); font-weight: 600; transition: var(--transition); }
+.ingredient-list li:hover { border-color: var(--s-neon); background: rgba(0, 242, 195, 0.05); transform: translateX(5px); box-shadow: 0 0 15px rgba(0, 242, 195, 0.15);}
+.method-text { color: var(--text-main); line-height: 1.8; font-size: 1.1rem; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.3);}
+
+/* -------------------------------------------------------------------------- */
+/* 7. UTILITIES, PAGINATION & STATES                                          */
+/* -------------------------------------------------------------------------- */
+.pagination-footer { display: flex; justify-content: center; margin-top: 50px; padding-bottom: 50px; }
+.pagination { display: flex; gap: 20px; align-items: center; background: var(--glass); backdrop-filter: blur(15px); padding: 10px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
+.pagination button { background: var(--p-neon); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+.pagination button:disabled { opacity: 0.3; cursor: not-allowed; background: var(--glass-border); }
+.pagination button:not(:disabled):hover { box-shadow: 0 0 20px rgba(124, 124, 255, 0.5); transform: scale(1.05); }
+.current-page { color: var(--s-neon); font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 15px rgba(0, 242, 195, 0.4); }
+
+.loader-screen { padding: 100px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; color: var(--s-neon); font-weight: 700; text-shadow: 0 0 15px rgba(0, 242, 195, 0.4);}
+.spinner { width: 50px; height: 50px; border: 4px solid var(--glass-border); border-top-color: var(--s-neon); border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0, 242, 195, 0.2);}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 80px 20px; background: var(--glass); border-radius: 24px; border: 1px dashed var(--p-neon); grid-column: 1/-1; backdrop-filter: blur(15px); box-shadow: inset 0 0 30px rgba(124, 124, 255, 0.1);}
+.favorites-header { text-align: center; margin-bottom: 40px; }
+.favorites-header h2 { font-size: 3rem; background: linear-gradient(to right, var(--p-neon), var(--s-neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(124, 124, 255, 0.3));}

@@ -1,0 +1,393 @@
+/* -------------------------------------------------------------------------- */
+/* 1. DESIGN SYSTEM & VARIABLES                                              */
+/* -------------------------------------------------------------------------- */
+:root {
+  /* High-Contrast Cyber Palette */
+  --bg-dark: #05070a;
+  --bg-gradient: radial-gradient(circle at top, #111827 0%, #05070a 100%);
+  
+  --p-neon: #7c7cff;      /* Electric Purple */
+  --s-neon: #00f2c3;      /* Cyber Mint */
+  --t-neon: #ff00c8;      /* Neon Pink */
+  
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.07);
+  
+  --text-main: #f8f9fb;
+  --text-muted: #94a3b8;
+  
+  /* Spacing Scale */
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 100px;
+  
+  --radius-xl: 32px;
+  --transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. BASE RESET & GLOBAL EFFECTS                                            */
+/* -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-dark);
+  background-image: var(--bg-gradient);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom Smooth Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { 
+  background: var(--p-neon); 
+  border-radius: 10px; 
+}
+
+/* Background Mouse Glow */
+.cursor-glow {
+  position: fixed;
+  top: -150px;
+  left: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(124, 124, 255, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. LAYOUT & HEADER                                                        */
+/* -------------------------------------------------------------------------- */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  position: relative;
+  z-index: 1;
+}
+
+header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+header h1 {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -3px;
+  background: linear-gradient(to right, var(--p-neon), var(--s-neon), var(--t-neon));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(124, 124, 255, 0.3));
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. SEARCH BAR                                                             */
+/* -------------------------------------------------------------------------- */
+.search-container {
+  max-width: 600px;
+  margin: 0 auto var(--space-lg) auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 20px 35px;
+  font-size: 1.1rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 100px;
+  color: white;
+  backdrop-filter: blur(20px);
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--s-neon);
+  box-shadow: 0 0 30px rgba(0, 242, 195, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. GRID & CARDS (Improved Spacing)                                        */
+/* -------------------------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 40px; /* Strong professional spacing */
+  margin-bottom: var(--space-lg);
+}
+
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(15px);
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-15px) scale(1.02);
+  background: var(--glass-hover);
+  border-color: var(--p-neon);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+.card h3 {
+  font-size: 1.6rem;
+  margin-top: 15px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(0, 242, 195, 0.1);
+  color: var(--s-neon);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 6. PROFESSIONAL RECIPE DETAILS                                            */
+/* -------------------------------------------------------------------------- */
+.detail-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.detail-card {
+  background: var(--glass);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 40px;
+  padding: var(--space-lg);
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6);
+}
+
+.detail-header h2 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+  margin-bottom: var(--space-md);
+}
+
+.recipe-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 24px;
+  margin-bottom: var(--space-md);
+}
+
+.meta-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--s-neon);
+  text-transform: uppercase;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.meta-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.recipe-description {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  border-left: 4px solid var(--p-neon);
+  padding-left: 30px;
+  margin: var(--space-md) 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 7. BUTTONS & UTILITIES                                                    */
+/* -------------------------------------------------------------------------- */
+button {
+  background: linear-gradient(135deg, var(--p-neon), var(--t-neon));
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 16px;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 10px 20px rgba(124, 124, 255, 0.2);
+}
+
+button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(124, 124, 255, 0.4);
+}
+
+.back-btn {
+  text-decoration: none;
+  color: var(--s-neon);
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 8. RESPONSIVE DESIGN                                                      */
+/* -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .grid { gap: 20px; grid-template-columns: 1fr; }
+  .detail-card { padding: 30px; }
+  header h1 { font-size: 3rem; }
+}
+/* -------------------------------------------------------------------------- */
+/* 1. SEARCH INTERFACE (Horizontal Layout)                                    */
+/* -------------------------------------------------------------------------- */
+.search-interface {
+  max-width: 900px;
+  margin: 0 auto 50px auto; /* 50px gap below the search bar */
+  position: relative;
+  z-index: 10;
+}
+
+.horizontal-control-bar {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.search-field-wrapper {
+  flex: 1;
+}
+
+/* Fixed Search Bar CSS */
+.main-search-input {
+  width: 100%;
+  padding: 18px 25px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: white;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.main-search-input:focus {
+  border-color: #7000ff; /* --p-neon */
+  box-shadow: 0 0 20px rgba(112, 0, 255, 0.2);
+}
+
+.filter-toggle-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.filter-toggle-action.active {
+  background: #7000ff;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(112, 0, 255, 0.4);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. FLOATING FILTER PANEL                                                   */
+/* -------------------------------------------------------------------------- */
+.filter-dropdown-drawer {
+  position: absolute;
+  top: 75px;
+  right: 0;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(10, 12, 18, 0.98);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.filter-controls-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.control-box label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #00f2c3; /* --s-neon */
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: #00f2c3;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. GRID & PAGINATION WRAPPER                                               */
+/* -------------------------------------------------------------------------- */
+.recipe-results-area {
+  margin-top: 20px; /* Extra spacing above the grid */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 40px;
+  margin-bottom: 80px;
+}
+
+.pagination-footer {
+  display: flex;
+  justify-content: center;
+  margin: 60px 0;
+  padding-bottom: 100px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 100px;
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
