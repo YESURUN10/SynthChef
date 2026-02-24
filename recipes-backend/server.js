@@ -8,21 +8,18 @@ const { Pool } = require("pg");
 
 // App setup
 const app = express();
+// Render sets the PORT automatically; default to 5000 for local testing
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL connection pool (Render-safe)
+// PostgreSQL connection pool (Using DATABASE_URL for Render)
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // REQUIRED for Render
+    rejectUnauthorized: false, // REQUIRED for Render cloud connections
   },
 });
 
@@ -36,19 +33,21 @@ app.get("/", (req, res) => {
 // GET recipes with backend pagination (MAX 30 per page)
 app.get("/recipes", async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
-
   let limit = parseInt(req.query.limit) || 12;
-  if (limit > 30) limit = 30;     // HARD CAP
+  
+  if (limit > 30) limit = 30; // HARD CAP
   if (limit < 1) limit = 12;
 
   const offset = (page - 1) * limit;
 
   try {
+    // Get paginated data
     const dataResult = await pool.query(
       "SELECT * FROM recipes ORDER BY id LIMIT $1 OFFSET $2",
       [limit, offset]
     );
 
+    // Get total count for pagination math
     const countResult = await pool.query(
       "SELECT COUNT(*) FROM recipes"
     );
@@ -64,7 +63,7 @@ app.get("/recipes", async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching recipes:", err);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "Database error", details: err.message });
   }
 });
 
@@ -132,6 +131,7 @@ app.get("/recipes/search", async (req, res) => {
 
 // -------------------- START SERVER --------------------
 
-app.listen(PORT, () => {
+// '0.0.0.0' allows Render to see the service
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
