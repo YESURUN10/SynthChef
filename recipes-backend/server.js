@@ -1,4 +1,4 @@
-// Load environment variables from .env
+// Load environment variables
 require("dotenv").config();
 
 // Core imports
@@ -14,13 +14,16 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL connection pool
+// PostgreSQL connection pool (Render-safe)
 const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false, // REQUIRED for Render
+  },
 });
 
 // -------------------- ROUTES --------------------
@@ -30,20 +33,37 @@ app.get("/", (req, res) => {
   res.send("Recipes API is running");
 });
 
-// GET ALL recipes (Unlocked for Client-Side Pagination)
+// GET recipes with backend pagination (MAX 30 per page)
 app.get("/recipes", async (req, res) => {
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+
+  let limit = parseInt(req.query.limit) || 12;
+  if (limit > 30) limit = 30;     // HARD CAP
+  if (limit < 1) limit = 12;
+
+  const offset = (page - 1) * limit;
+
   try {
-    // PRO FIX: Removed LIMIT and OFFSET to send the full database to React
-    const result = await pool.query(
-      "SELECT * FROM recipes ORDER BY id"
+    const dataResult = await pool.query(
+      "SELECT * FROM recipes ORDER BY id LIMIT $1 OFFSET $2",
+      [limit, offset]
     );
 
+    const countResult = await pool.query(
+      "SELECT COUNT(*) FROM recipes"
+    );
+
+    const total = parseInt(countResult.rows[0].count);
+
     res.json({
-      count: result.rows.length,
-      data: result.rows,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      data: dataResult.rows,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching recipes:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
@@ -64,29 +84,48 @@ app.get("/recipes/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching recipe:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
 
-// Search recipes by cuisine
+// Search recipes by cuisine (paginated + capped)
 app.get("/recipes/search", async (req, res) => {
   const { cuisine } = req.query;
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+
+  let limit = parseInt(req.query.limit) || 12;
+  if (limit > 30) limit = 30;
+  if (limit < 1) limit = 12;
+
+  const offset = (page - 1) * limit;
 
   if (!cuisine) {
     return res.status(400).json({ error: "Cuisine query is required" });
   }
 
   try {
-    // PRO FIX: Removed "LIMIT 20" from the search query as well
-    const result = await pool.query(
-      "SELECT * FROM recipes WHERE cuisine ILIKE $1",
+    const dataResult = await pool.query(
+      "SELECT * FROM recipes WHERE cuisine ILIKE $1 ORDER BY id LIMIT $2 OFFSET $3",
+      [`%${cuisine}%`, limit, offset]
+    );
+
+    const countResult = await pool.query(
+      "SELECT COUNT(*) FROM recipes WHERE cuisine ILIKE $1",
       [`%${cuisine}%`]
     );
 
-    res.json(result.rows);
+    const total = parseInt(countResult.rows[0].count);
+
+    res.json({
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      data: dataResult.rows,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Error searching recipes:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
