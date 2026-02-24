@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useFavorites } from "../context/FavoritesContext";
+import API_BASE_URL from "../config/api";
 
 function RecipeDetail() {
   const { id } = useParams();
@@ -13,22 +14,37 @@ function RecipeDetail() {
   const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
-    setLoading(true);
-    axios.get(`http://localhost:5000/recipes/${id}`)
-      .then(res => {
+    const fetchRecipe = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${API_BASE_URL}/recipes/${id}`);
         setRecipe(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error("Error fetching recipe:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRecipe();
   }, [id]);
 
   if (loading) return <div className="loader-screen"><div className="spinner"></div></div>;
   if (!recipe) return <div className="empty-state">Recipe not found.</div>;
 
   const favorited = isFavorite(recipe.id);
+
+  // Parse nutrients if it's a string
+  let nutrients = null;
+  if (recipe.nutrients) {
+    try {
+      nutrients = typeof recipe.nutrients === 'string' 
+        ? JSON.parse(recipe.nutrients) 
+        : recipe.nutrients;
+    } catch (e) {
+      console.error("Error parsing nutrients:", e);
+    }
+  }
 
   return (
     <motion.div 
@@ -50,31 +66,63 @@ function RecipeDetail() {
           </div>
           
           <div className="recipe-meta-grid">
-            <div className="meta-item"><span className="meta-label">Cuisine</span><span className="meta-value">{recipe.cuisine}</span></div>
-            <div className="meta-item"><span className="meta-label">Time</span><span className="meta-value">⏱ {recipe.total_time}m</span></div>
-            <div className="meta-item"><span className="meta-label">Serves</span><span className="meta-value">👥 {recipe.serves}</span></div>
-            <div className="meta-item"><span className="meta-label">Rating</span><span className="meta-value">⭐ {recipe.rating}</span></div>
+            <div className="meta-item"><span className="meta-label">Cuisine</span><span className="meta-value">{recipe.cuisine || "N/A"}</span></div>
+            <div className="meta-item"><span className="meta-label">Continent</span><span className="meta-value">{recipe.contient || "N/A"}</span></div>
+            <div className="meta-item"><span className="meta-label">Region</span><span className="meta-value">{recipe.country_state || "N/A"}</span></div>
+            <div className="meta-item"><span className="meta-label">Prep Time</span><span className="meta-value">⏱ {recipe.prep_time || "N/A"}m</span></div>
+            <div className="meta-item"><span className="meta-label">Cook Time</span><span className="meta-value">🔥 {recipe.cook_time || "N/A"}m</span></div>
+            <div className="meta-item"><span className="meta-label">Total Time</span><span className="meta-value">⏱ {recipe.total_time || "N/A"}m</span></div>
+            <div className="meta-item"><span className="meta-label">Serves</span><span className="meta-value">👥 {recipe.serves || "N/A"}</span></div>
+            <div className="meta-item full-width"><span className="meta-label">Rating</span><span className="meta-value">⭐ {recipe.rating || "No rating"}</span></div>
           </div>
         </header>
 
-        <div className="recipe-description">{recipe.description}</div>
+        {recipe.description && (
+          <div className="recipe-description">{recipe.description}</div>
+        )}
 
         <div className="recipe-content">
           <section className="recipe-section">
             <h4>Ingredients</h4>
             <ul className="ingredient-list">
-               {recipe.ingredients ? recipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>) : (
-                 <><li>Premium organic ingredients</li><li>Signature spices</li><li>Fresh herbs</li></>
-               )}
+              {recipe.ingredients && recipe.ingredients.length > 0 ? (
+                recipe.ingredients.map((ing, i) => (
+                  <li key={i}>{ing}</li>
+                ))
+              ) : (
+                <li className="empty-data">No ingredients listed</li>
+              )}
             </ul>
           </section>
 
           <section className="recipe-section">
-            <h4>Method</h4>
-            <p className="method-text">
-              Follow the chef's precise instructions to recreate this {recipe.cuisine} masterpiece. Ensure all ingredients are at room temperature before beginning the preparation.
-            </p>
+            <h4>Instructions</h4>
+            {recipe.instructions && recipe.instructions.length > 0 ? (
+              <ol className="instructions-list">
+                {recipe.instructions.map((step, i) => (
+                  <li key={i}>{step}</li>
+                ))}
+              </ol>
+            ) : (
+              <p className="method-text">
+                Follow the chef's precise instructions to recreate this {recipe.cuisine || "culinary"} masterpiece. Ensure all ingredients are at room temperature before beginning the preparation.
+              </p>
+            )}
           </section>
+
+          {nutrients && (
+            <section className="recipe-section nutrients-section">
+              <h4>Nutritional Information</h4>
+              <div className="nutrients-grid">
+                {Object.entries(nutrients).map(([key, value]) => (
+                  <div key={key} className="nutrient-item">
+                    <span className="nutrient-label">{key.replace(/_/g, ' ')}</span>
+                    <span className="nutrient-value">{String(value)}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </motion.div>

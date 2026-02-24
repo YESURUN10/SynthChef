@@ -234,3 +234,264 @@ input[type="range"] { width: 100%; accent-color: var(--s-neon); cursor: pointer;
 .empty-state { text-align: center; padding: 80px 20px; background: var(--glass); border-radius: 24px; border: 1px dashed var(--p-neon); grid-column: 1/-1; backdrop-filter: blur(15px); box-shadow: inset 0 0 30px rgba(124, 124, 255, 0.1);}
 .favorites-header { text-align: center; margin-bottom: 40px; }
 .favorites-header h2 { font-size: 3rem; background: linear-gradient(to right, var(--p-neon), var(--s-neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(124, 124, 255, 0.3));}
+
+/* -------------------------------------------------------------------------- */
+/* 8. THEME TOGGLE & LIGHT THEME                                              */
+/* -------------------------------------------------------------------------- */
+.theme-toggle-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+.theme-toggle-btn:hover {
+  background: var(--glass-hover);
+  border-color: var(--s-neon);
+  box-shadow: 0 0 15px rgba(0, 242, 195, 0.3);
+}
+
+/* Light Theme - Only update CSS variables, NOT main background */
+.light-theme {
+  --bg-dark: #f8f9fb;
+  --p-neon: #5a5aff;
+  --s-neon: #00b395;
+  --t-neon: #d100a0;
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-hover: rgba(255, 255, 255, 0.9);
+  --text-main: #1a1a2e;
+  --text-muted: #4a4a6a;
+}
+
+/* Light theme adjustments for cards and details */
+.light-theme .card {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.light-theme .card:hover {
+  border-color: var(--s-neon);
+  box-shadow: 0 15px 40px rgba(0, 178, 149, 0.2);
+  background: rgba(255, 255, 255, 1);
+}
+.light-theme .card-stats {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-main);
+}
+.light-theme .detail-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.light-theme .title-row h2 {
+  color: #1a1a2e;
+  text-shadow: none;
+}
+.light-theme .meta-value {
+  color: #1a1a2e;
+}
+.light-theme .recipe-meta-grid {
+  background: rgba(255, 255, 255, 0.6);
+}
+.light-theme .ingredient-list li {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
+}
+.light-theme .ingredient-list li:hover {
+  background: rgba(0, 242, 195, 0.1);
+}
+.light-theme .method-text {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-main);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.light-theme .recipe-section h4 {
+  color: #5a5aff;
+}
+.light-theme .recipe-description {
+  color: var(--text-muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 9. RECIPE DETAIL ENHANCEMENTS                                              */
+/* -------------------------------------------------------------------------- */
+.meta-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.instructions-list li {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  font-weight: 500;
+  line-height: 1.6;
+  transition: var(--transition);
+  counter-increment: step-counter;
+  /* CRITICAL: Fix overflowing text */
+  height: auto;
+  min-height: fit-content;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.instructions-list li::before {
+  content: counter(step-counter);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--p-neon);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+.instructions-list li:hover {
+  border-color: var(--s-neon);
+  background: rgba(0, 242, 195, 0.05);
+  transform: translateX(5px);
+  box-shadow: 0 0 15px rgba(0, 242, 195, 0.15);
+}
+
+.nutrients-section {
+  margin-top: 20px;
+}
+.nutrients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+.nutrient-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+  /* CRITICAL: Fix overflowing text */
+  height: auto;
+  min-height: fit-content;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.nutrient-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--s-neon);
+  margin-bottom: 5px;
+  letter-spacing: 1px;
+}
+.nutrient-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.light-theme .nutrient-item {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.light-theme .nutrient-value {
+  color: var(--text-main);
+}
+
+/* Filter Select Styling */
+.filter-select {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(15, 20, 35, 0.75);
+  border: 1px solid rgba(124, 124, 255, 0.4);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+  outline: none;
+}
+.filter-select:hover, .filter-select:focus {
+  border-color: var(--s-neon);
+  box-shadow: 0 0 20px rgba(0, 242, 195, 0.3);
+}
+.filter-select option {
+  background: #05070a;
+  color: white;
+}
+
+.light-theme .filter-select {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
+}
+.light-theme .filter-select option {
+  background: white;
+  color: var(--text-main);
+}
+
+/* Quick Filter Selects - Control Bar */
+.quick-filter-select {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 15px;
+  background: rgba(15, 20, 35, 0.75);
+  border: 1px solid rgba(124, 124, 255, 0.4);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+  outline: none;
+}
+.quick-filter-select:hover, .quick-filter-select:focus {
+  border-color: var(--s-neon);
+  box-shadow: 0 0 20px rgba(0, 242, 195, 0.3);
+}
+.quick-filter-select option {
+  background: #05070a;
+  color: white;
+}
+
+.light-theme .quick-filter-select {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
+}
+.light-theme .quick-filter-select option {
+  background: white;
+  color: var(--text-main);
+}
+
+.filter-bar-row {
+  margin-top: 15px;
+}
+
+/* Search and Filter Bar Rows */
+.search-bar-row {
+  margin-bottom: 0;
+}
+
+.recipe-explorer-container {
+  display: flex;
+  flex-direction: column;
+  min-height: fit-content;
+  height: auto;
+}

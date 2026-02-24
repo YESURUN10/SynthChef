@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
 
 function Layout({ children }) {
   const { favorites } = useFavorites();
+  const [isDark, setIsDark] = useState(true);
 
   return (
-    <div className="container">
+    <div className={`container ${isDark ? '' : 'light-theme'}`}>
       <div className="cursor-glow"></div> {/* Background ambient light */}
       
       <motion.header
@@ -26,6 +28,13 @@ function Layout({ children }) {
             <NavLink to="/favorites" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               Favorites <span className="fav-count">{favorites.length}</span>
             </NavLink>
+            <button 
+              className="theme-toggle-btn"
+              onClick={() => setIsDark(!isDark)}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? "☀️" : "🌙"}
+            </button>
           </div>
         </nav>
       </motion.header>
